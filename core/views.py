@@ -28,16 +28,48 @@ def signup(request):
             else:
                 User.objects.create_user(username=username, email=email, password=password)
 
+                user_login = auth.authenticate(username=username, password=password)
+                auth.login(request, user_login)
 
                 user_model = User.objects.get(username=username)
                 new_profile = Profile(user=user_model, id_user=user_model.id)
                 new_profile.save()
-                return redirect('index')
+                return redirect('settings')
         else:
             messages.info(request, 'Password not matching')
             return redirect('signup')
     else:
         return render(request, 'signup.html')
+
+def settings(request):
+    user_profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+
+        if request.FILES.get('image') == None:
+            image = user_profile.profileimg
+            bio = request.POST['bio']
+            location = request.POST['location']
+
+            user_profile.profileimg = image
+            user_profile.bio = bio
+            user_profile.location = location
+            user_profile.save()
+        if request.FILES.get('image') != None:
+            image = request.FILES.get('image')
+            bio = request.POST['bio']
+            location = request.POST['location']
+
+            user_profile.profileimg = image
+            user_profile.bio = bio
+            user_profile.location = location
+            user_profile.save()
+        return redirect('settings')
+
+
+    return render(request, 'setting.html', {
+        'user_profile': user_profile
+    })
 
 def signin(request):
     if request.method == "POST":
