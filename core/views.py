@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required
 
-from core.models import Profile
+from core.models import Post, Profile
 
 @login_required(login_url='signin')
 def index(request):
@@ -99,4 +99,14 @@ def logout(request):
 
 @login_required(login_url='signin')
 def upload(request):
-    return HttpResponse("Upload page")
+    if request.method == 'POST':
+        user = request.user.username
+        image = request.FILES.get('image_upload')
+        caption = request.POST['caption']
+
+        new_post = Post(user=user, image=image, caption=caption)
+        new_post.save()
+
+        return redirect('/')
+    else:
+        return redirect('/')
