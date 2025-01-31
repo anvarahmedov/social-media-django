@@ -170,10 +170,13 @@
                         </div> -->
 
                         <!-- profile -->
-
+                        {% if user_profile %}
                         <a href="#">
                             <img src="{{user_profile.profileimg.url}}" class="header-avatar" alt="">
                         </a>
+                        {% else %}
+                        <img src="/media/blank-profile-picture.png" class="header-avatar" alt="">
+                        {% endif %}
                         <div uk-drop="mode: click;offset:9" class="header_dropdown profile_dropdown border-t">
                             <ul>
                                 <li><a href="/settings"> Account settings </a> </li>
