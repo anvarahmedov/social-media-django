@@ -21,3 +21,6 @@ class Post(models.Model):
     caption = models.TextField()
     created_at = models.DateTimeField(default=datetime.now)
     no_of_likes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user

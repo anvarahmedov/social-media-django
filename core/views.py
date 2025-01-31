@@ -9,7 +9,12 @@ from core.models import Profile
 
 @login_required(login_url='signin')
 def index(request):
-    return render(request, 'index.html')
+    user_object = User.objects.get(username=request.user)
+    user_profile = Profile.objects.get(user=user_object)
+    context = {
+        'user_profile': user_profile
+    }
+    return render(request, 'index.html', context=context)
 
 def signup(request):
     if request.method == 'POST':
@@ -91,3 +96,7 @@ def signin(request):
 def logout(request):
     auth.logout(request)
     return redirect('signin')
+
+@login_required(login_url='signin')
+def upload(request):
+    return HttpResponse("Upload page")
