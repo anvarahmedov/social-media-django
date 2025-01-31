@@ -1,7 +1,7 @@
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required
 
@@ -119,6 +119,22 @@ def delete(request):
         post = Post.objects.get(id=post_id)
         #return HttpResponse(post.user)
         post.delete()
+        return redirect('/')
+    else:
+        return redirect('/')
+
+@login_required
+def like_post(request, post_id):
+
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            Profile.objects.get(user=request.user).likes.remove(post)
+        else:
+            post.likes.add(request.user)
+            request.user.profile.likes.add(post)
+            Profile.objects.get(user=request.user).likes.add(post)
         return redirect('/')
     else:
         return redirect('/')
