@@ -138,3 +138,14 @@ def like_post(request, post_id):
         return redirect('/')
     else:
         return redirect('/')
+
+@login_required(login_url='signin')
+def profile(request, pk):
+    user_object = User.objects.get(id=pk)
+    user_post = Post.objects.filter(user=user_object.username)
+    user_post_length = len(user_post)
+    context = {
+        'user_profile': Profile.objects.get(user=user_object), 'user_object': user_object, 'user_post': user_post,
+        'user_post_length': user_post_length
+    }
+    return render(request, 'profile.html', context=context)
