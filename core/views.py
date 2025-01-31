@@ -144,8 +144,10 @@ def profile(request, pk):
     user_object = User.objects.get(id=pk)
     user_post = Post.objects.filter(user=user_object.username)
     user_post_length = len(user_post)
+    user_followers = len(Profile.objects.get(user=user_object).followers.all())
+    user_following = Profile.objects.get(user=user_object).following.count()
     context = {
         'user_profile': Profile.objects.get(user=user_object), 'user_object': user_object, 'user_post': user_post,
-        'user_post_length': user_post_length
+        'user_post_length': user_post_length, 'user_followers': user_followers, 'user_following': user_following
     }
     return render(request, 'profile.html', context=context)
