@@ -11,8 +11,10 @@ from core.models import Post, Profile
 def index(request):
     user_object = User.objects.get(username=request.user)
     user_profile = Profile.objects.get(user=user_object)
+
+    posts = Post.objects.all()
     context = {
-        'user_profile': user_profile
+        'user_profile': user_profile, 'posts': posts
     }
     return render(request, 'index.html', context=context)
 
@@ -107,6 +109,16 @@ def upload(request):
         new_post = Post(user=user, image=image, caption=caption)
         new_post.save()
 
+        return redirect('/')
+    else:
+        return redirect('/')
+
+def delete(request):
+    if request.method == 'POST':
+        post_id = request.POST['post_id']
+        post = Post.objects.get(id=post_id)
+        #return HttpResponse(post.user)
+        post.delete()
         return redirect('/')
     else:
         return redirect('/')
