@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required
+import random
 
 from core.models import Post, Profile
 from itertools import chain
@@ -28,9 +29,34 @@ def index(request):
 
     feed_list = list(chain(*feed))
 
+    all_users = User.objects.all()
+
+    user_following_all = []
+
+    for user in user_following:
+        user_list = User.objects.get(username=user.user)
+        user_following_all.append(user_list)
+
+    new_suggestions_list = [x for x in list(all_users) if (x not in list(user_following_all))]
+    current_user = User.objects.get(username=request.user.username)
+    final_suggestions_list = [x for x in new_suggestions_list if x != current_user]
+    random.shuffle(final_suggestions_list)
+
+    username_profile = []
+    username_profile_list = []
+
+    for users in final_suggestions_list:
+        username_profile.append(users.id)
+
+    for ids in username_profile:
+        profile_lists = Profile.objects.filter(user_id=ids)
+        username_profile_list.append(profile_lists)
+
+    suggestions_username_profile_list = list(chain(*username_profile_list))
+
     posts = Post.objects.all()
     context = {
-        'user_profile': user_profile, 'posts': feed_list
+        'user_profile': user_profile, 'posts': feed_list, 'suggestions_username_profile_list': suggestions_username_profile_list[:4]
     }
     return render(request, 'index.html', context=context)
 
