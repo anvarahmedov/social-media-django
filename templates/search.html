@@ -322,12 +322,12 @@
 
                         {% for users in username_profile_list %}
                         <section class="search-result-item">
-                            <a class="image-link" href="/profile/{{users.user}}"><img class="image" src="{{users.profileimg.url}}">
+                            <a class="image-link" href="/profile/{{users.id}}"><img class="image" src="{{users.profileimg.url}}">
                             </a>
                             <div class="search-result-item-body">
                                 <div class="row">
                                     <div class="col-sm-9">
-                                        <h4 class="search-result-item-heading"><a href="/profile/{{users.user}}"><b>@{{users.user}}</b></a></h4>
+                                        <h4 class="search-result-item-heading"><a href="/profile/{{users.id}}"><b>@{{users.user}}</b></a></h4>
                                         <p class="info">{{users.location}}</p>
                                         <p class="description">{{users.bio}}</p>
                                     </div>
