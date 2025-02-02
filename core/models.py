@@ -8,6 +8,7 @@ from datetime import datetime
 User = get_user_model()
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    id_user = models.IntegerField(unique=True, null=True, blank=True)
     bio = models.TextField(blank=True)
     profileimg = models.ImageField(upload_to='profile_images', default='blank-profile-picture.png')
     location = models.CharField(max_length=100, blank=True)

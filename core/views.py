@@ -6,15 +6,31 @@ from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required
 
 from core.models import Post, Profile
+from itertools import chain
 
 @login_required(login_url='signin')
 def index(request):
     user_object = User.objects.get(username=request.user)
     user_profile = Profile.objects.get(user=user_object)
 
+    user_following_list = []
+    feed = []
+
+    user_following = user_profile.following.all()
+
+    for users in user_following:
+        user_following_list.append(users.user)
+
+
+    for usernames in user_following_list:
+        feed_lists = Post.objects.filter(user=usernames)
+        feed.append(feed_lists)
+
+    feed_list = list(chain(*feed))
+
     posts = Post.objects.all()
     context = {
-        'user_profile': user_profile, 'posts': posts
+        'user_profile': user_profile, 'posts': feed_list
     }
     return render(request, 'index.html', context=context)
 
@@ -39,7 +55,7 @@ def signup(request):
                 auth.login(request, user_login)
 
                 user_model = User.objects.get(username=username)
-                new_profile = Profile(user=user_model, id_user=user_model.id)
+                new_profile = Profile(user=user_model)
                 new_profile.save()
                 return redirect('settings')
         else:
@@ -148,20 +164,17 @@ def follow(request):
         user_profile = Profile.objects.get(user=User.objects.get(id=user_id))
         follower_profile = Profile.objects.get(user=User.objects.get(id=follower_id))
 
-
-
-        if user_profile.followers.filter(followers=user_profile).exists():
+       # if (user_profile.followers.filter(followers=follower_profile)):
+        if user_profile.followers.filter(id=follower_profile.id).exists():
             user_profile.followers.remove(follower_profile)
             follower_profile.following.remove(user_profile)
-
-
         else:
             user_profile.followers.add(follower_profile)
             follower_profile.following.add(user_profile)
 
-        return redirect('/profile/' + str(follower_id))
+        return redirect(f'/profile/{user_profile.id}')
     else:
-        return redirect('/')
+        return redirect(f'/profile/{user_profile.id}')
 
 @login_required(login_url='signin')
 def profile(request, pk):
