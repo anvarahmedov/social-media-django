@@ -170,6 +170,9 @@ def profile(request, pk):
     user_post = Post.objects.filter(user=user_object.username)
     user_post_length = len(user_post)
 
+
+
+
     follower = request.user
 
     if user_profile.followers.filter(user=follower).exists():
@@ -183,7 +186,7 @@ def profile(request, pk):
     context = {
         'user_object': user_object,
         'user_profile': user_profile,
-        'user_posts': user_post,
+        'user_post': user_post,
         'user_post_length': user_post_length,
         'button_text': button_text,
         'user_followers': user_followers,
