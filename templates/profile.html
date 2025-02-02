@@ -49,8 +49,8 @@
 
 					<span style="color: white; font-size: 27px;"><b>{{user_following}} following</b></span>
 
-					<input type="hidden" value="{{user.username}}" name="follower" />
-					<input type="hidden" value="{{user_object.username}}" name="user" />
+					<input type="hidden" value="{{user.id}}" name="follower_id" />
+					<input type="hidden" value="{{user_object.id}}" name="user_id" />
 
 					{% if user_object.username == user.username %}
 					<a href="/settings" data-ripple="">Account Settings</a>

@@ -140,14 +140,53 @@ def like_post(request, post_id):
         return redirect('/')
 
 @login_required(login_url='signin')
+def follow(request):
+    if request.method == 'POST':
+        follower_id = request.POST['follower_id']
+        user_id = request.POST['user_id']
+
+        user_profile = Profile.objects.get(user=User.objects.get(id=user_id))
+        follower_profile = Profile.objects.get(user=User.objects.get(id=follower_id))
+
+
+
+        if user_profile.followers.filter(followers=user_profile).exists():
+            user_profile.followers.remove(follower_profile)
+            follower_profile.following.remove(user_profile)
+
+
+        else:
+            user_profile.followers.add(follower_profile)
+            follower_profile.following.add(user_profile)
+
+        return redirect('/profile/' + str(follower_id))
+    else:
+        return redirect('/')
+
+@login_required(login_url='signin')
 def profile(request, pk):
-    user_object = User.objects.get(id=pk)
+    user_profile = Profile.objects.get(id=pk)
+    user_object = user_profile.user
     user_post = Post.objects.filter(user=user_object.username)
     user_post_length = len(user_post)
-    user_followers = len(Profile.objects.get(user=user_object).followers.all())
-    user_following = Profile.objects.get(user=user_object).following.count()
+
+    follower = request.user
+
+    if user_profile.followers.filter(user=follower).exists():
+        button_text = 'Unfollow'
+    else:
+        button_text = 'Follow'
+
+    user_followers = len(user_profile.followers.all())
+    user_following = len(user_profile.following.all())
+
     context = {
-        'user_profile': Profile.objects.get(user=user_object), 'user_object': user_object, 'user_post': user_post,
-        'user_post_length': user_post_length, 'user_followers': user_followers, 'user_following': user_following
+        'user_object': user_object,
+        'user_profile': user_profile,
+        'user_posts': user_post,
+        'user_post_length': user_post_length,
+        'button_text': button_text,
+        'user_followers': user_followers,
+        'user_following': user_following,
     }
-    return render(request, 'profile.html', context=context)
+    return render(request, 'profile.html', context)
